@@ -1,7 +1,34 @@
 import React, { Component } from 'react';
-import { Card, CardSection, Button, TextField } from './common';
+import { connect } from 'react-redux';
+
+import { Card, CardSection, Button, TextField, ErrorText, Spinner } from './common';
+import { emailChanged, passwordChanged, loginUser } from '../actions';
 
 class LoginForm extends Component {
+    onEmailChange(text) {
+        this.props.emailChanged(text);
+    }
+
+    onPasswordChange(text) {
+        this.props.passwordChanged(text);
+    }
+
+    onButtonPress() {
+        const { email, password } = this.props;
+        this.props.loginUser({ email, password });
+    }
+
+    renderButton() {
+        if (this.props.loading) {
+            return <Spinner />;
+        }
+        return (
+            <Button onPress={this.onButtonPress.bind(this)}>
+                Log In
+            </Button>
+        );
+    }
+
     render() {
         return (
             <Card>
@@ -9,6 +36,8 @@ class LoginForm extends Component {
                     <TextField 
                         label='Email' 
                         placeholder='email@gmail.com'
+                        onChangeText={this.onEmailChange.bind(this)}
+                        value={this.props.email}
                     />
                 </CardSection>
 
@@ -17,18 +46,25 @@ class LoginForm extends Component {
                         label='Password' 
                         secureTextEntry
                         placeholder='password'
+                        onChangeText={this.onPasswordChange.bind(this)}
+                        value={this.props.password}
                     />
                 </CardSection>
 
                 <CardSection>
-                    <Button>
-                        Log In
-                    </Button>
+                    {this.renderButton()}
                 </CardSection>
+
+                <ErrorText errorText={this.props.error} />
 
             </Card>
         );
     }
 }
 
-export default LoginForm;
+const mapStateToProps = ({ auth }) => {
+    const { email, password, error, loading } = auth;
+    return { email, password, error, loading };
+};
+
+export default connect(mapStateToProps, { emailChanged, passwordChanged, loginUser })(LoginForm);
