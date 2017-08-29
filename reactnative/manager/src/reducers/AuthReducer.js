@@ -6,7 +6,13 @@ import {
     LOGIN_USER
 } from '../actions/types';
 
-const INITIAL_STATE = { email: '', password: '', user: null, error: '', loading: false };
+const INITIAL_STATE = { 
+    email: 'test@test.com', 
+    password: 'abc123', 
+    user: null, 
+    error: '', 
+    loading: false 
+};
 
 export default (state = INITIAL_STATE, action) => {
     console.log(action);
