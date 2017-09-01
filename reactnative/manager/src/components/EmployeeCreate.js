@@ -6,7 +6,7 @@ import { Card, CardSection, TextField, Button } from './common';
 import { employeeUpdate, employeeCreate } from '../actions';
 
 class EmployeeCreate extends Component {
-    onButtonPress(){
+    onButtonPress() {
         const { name, phone, shift } = this.props;
         this.props.employeeCreate({ name, phone, shift: shift || 'Monday' });
     }
