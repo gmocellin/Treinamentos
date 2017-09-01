@@ -1,20 +1,22 @@
 import _ from 'lodash';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { ListView, View, Text } from 'react-native';
+import { ListView, View } from 'react-native';
 
+import ListItem from './ListItem';
+import { Spinner } from './common';
 import { employeesFetch } from '../actions';
 
 class EmployeeList extends Component {
     componentWillMount() {
         this.props.employeesFetch();
-        this.createDataSourece(this.props);
+        this.createDataSource(this.props);
     }
 
     componentWillReceiveProps(nextProps) {
         //nextProps are the next set os props that this component will be rendered with
         //this.props is still the old set of props
-        this.createDataSourece(nextProps);
+        this.createDataSource(nextProps);
     }
 
     createDataSource({ employees }) {
@@ -25,24 +27,45 @@ class EmployeeList extends Component {
         this.dataSource = ds.cloneWithRows(employees);
     }
 
-    render() {
-        console.log(this);
+    renderRow(employee) {
+        return <ListItem employee={employee} />;
+    }
+
+    renderList() {
+        if (this.props.loading) {
+            return (
+                <View style={{ marginTop: 230, flex: 1 }}>
+                    <Spinner />
+                </View>
+            );
+        }
         return (
-            <ListView
+            <ListView 
                 enableEmptySections
                 dataSource={this.dataSource}
                 renderRow={this.renderRow}
             />
         );
     }
+
+    render() {
+        console.log(this);
+        return (
+            <View>
+                {this.renderList()}
+            </View>
+        );
+    }
 }
 
 const mapStateToProps = state => {
-    const { employees } = _.map(state.employees, (val, uid) => {
-        return { ...val, uid }; 
+    const employees = _.map(state.employees.employeesList, (val, uid) => {
+        return { ...val, uid };
     });
 
-    return { employees };
+    const { loading } = state.employees;
+
+    return { employees, loading };
 };
 
 export default connect(mapStateToProps, { employeesFetch })(EmployeeList);
